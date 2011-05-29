@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Teuxdeux mobile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" /> 
+    <style type="text/css">
+      *{margin:0;padding:0;font-family:sans-serif;}
+      .content{height:100%;}
+      .date {
+        text-align: center;
+        text-transform: uppercase;
+        color: black;
+        padding-bottom: 10px;
+        padding-top: 10px;
+      }
+      .today{color:#c00;}
+      .list ul{padding-top:3px;text-align:left;}
+      .list li{
+        border-bottom:1px dotted #DDD;
+        padding-left:5px;
+        padding-right:5px;
+        font-size:1.6em;
+      }
+      .list li p{display:inline;}
+      .list li.crossedout p{text-decoration:line-through;}
+      .list li .delete{
+        float:right;
+        padding-right:5px;
+        text-decoration:none;
+        display:none;
+      }
+      .list li .delete a{color:#c00;text-decoration:none;}
+      .list li.crossedout .delete{display:inline;}
+      .list li.loading{color:#c00;text-align:center}
+      form{padding-bottom:10px;text-align:center;}
+      form input{font-size:1.8em;width:99%;}
+      .prev{margin-left:10px;float:left;font-size:2em;}
+      .next{margin-right:10px;float:right;font-size:2em;}
+    </style>
+  </head>
+  <body>
+    <div class="content">
+      <div class="date today">
+        <h1><span>someday</span></h1>
+        <h3>sometime</h3>
+      </div>
+      <form action="/user/create_todo" class="new_todo" method="post">
+        <input class="entry" maxlength="140" name="item" type="text" autocomplete="off" autofocus>
+        <input name="item_date" class="item_date" type="hidden" value="2011-03-12">
+      </form>
+      <div class="list">
+        <ul>
+          <li class="loading">loading ...</li>
+          <li class="placeholder"><p></p> <span class="delete"><a href="">x</a></span></li>
+          <li class="placeholder"><p></p> <span class="delete"><a href="">x</a></span></li>
+          <li class="placeholder"><p></p> <span class="delete"><a href="">x</a></span></li>
+          <li class="placeholder"><p></p> <span class="delete"><a href="">x</a></span></li>
+          <li class="placeholder"><p></p> <span class="delete"><a href="">x</a></span></li>
+          <li class="placeholder"><p></p> <span class="delete"><a href="">x</a></span></li>
+          <li class="placeholder"><p></p> <span class="delete"><a href="">x</a></span></li>
+          <li class="placeholder"><p></p> <span class="delete"><a href="">x</a></span></li>
+          <li class="placeholder"><p></p> <span class="delete"><a href="">x</a></span></li>
+          <li class="placeholder"><p></p> <span class="delete"><a href="">x</a></span></li>
+          <li class="placeholder"><p></p> <span class="delete"><a href="">x</a></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+    <script src="/jquery.jswipe.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>
