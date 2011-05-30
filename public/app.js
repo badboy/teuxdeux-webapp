@@ -1,4 +1,4 @@
-$(function() {
+(function() {
   // https://gist.github.com/992678
   var pad = function(s,l,c,u){c=new Array((l=(l||0)-(''+s).length+1)>0&&l||0).join(c!=u?c:' ');return {l:c+s,r:s+c,toString:function(){return c+s}}}
 
@@ -6,6 +6,16 @@ $(function() {
   function dateString(t) {
     t = t || new Date;
     return (t.getYear() + 1900)+"-"+pad(t.getMonth()+1,2,0)+"-"+pad(t.getDate(),2,0);
+  }
+
+  // return new date object with two additional methods
+  // * toString returns YYYY-MM-DD formatted string
+  // * getRealYear returns the real year (getYear()+1900)
+  function dateNow() {
+    var t = new Date;
+    t.toString = function() { return dateString(t); }
+    t.getRealYear = function() { return t.getYear() + 1900; }
+    return t;
   }
 
   // return english dayname
@@ -22,10 +32,28 @@ $(function() {
     ][date.getDay()];
   }
 
+  // return english monthname
+  function getMonthname(date) {
+    date = date || new Date;
+    return [
+      "December",
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November"
+    ][date.getMonth()];
+  }
+
   function appendTodo(data) {
     var obj = $("li.placeholder").first().removeClass("placeholder")
     if(obj.length === 0) {
-      console.log("appendTodo without placeholder");
       obj = $('<li><p></p> <span class="delete"><a href="">x</a></span></li>')
       $("div.list ul").append(obj);
     }
@@ -40,9 +68,15 @@ $(function() {
   function fetchTodos() {
     ToDo.list(function(data) {
       $("li.loading").remove();
+
+  // skip URL bar in mobile browser
+  ///mobile/i.test(navigator.userAgent) && !location.hash && (function () {
+    //window.scrollTo(0, 1);
+  //})();
+
       for(id in data) {
         var t = data[id];
-        if(t.do_on === TODAY) {
+        if(t.do_on === TODAY.toString()) {
           appendTodo(t);
         }
       }
@@ -127,13 +161,14 @@ $(function() {
    * we want some more functionality:
    *   real date switching thingy (and "someday" list)
    **/
-  $('.date').swipe({
-    swipeLeft: function() { console.log("date switch not implemented"); }, // next
-    swipeRight: function() { console.log("date switch not implemented"); } // prev
-  })
+  $('.date').
+    // next
+    swipeLeft(function() { console.log("date switch not implemented"); }).
+    // prev
+    swipeRight(function() { console.log("date switch not implemented"); });
 
   // add new todo on submit
-  $("form.new_todo").submit(function(e) {
+  $("form.new_todo").bind('submit', function(e) {
     e.preventDefault();
     var entry = $(e.target).find("input.entry");
     var val = entry.val();
@@ -177,23 +212,24 @@ $(function() {
     });
   });
 
-  // replace "current time" header with real data
-  var TODAY = dateString();
-  $("div.today h1 span").text(getDayname());
-  $("div.today h3").text(TODAY);
-  $("input.item_date").val(TODAY);
+  var TODAY = dateNow();
 
-  // load default data
-  ToDo.user(function(data) {
-    console.log("user", data);
-    fetchTodos();
-  }, function(req, stat) {
-    // need error handling
-    console.log(req, stat);
-  });
+    // replace "current time" header with real data
+    $("div.today h1 span").text(getDayname(TODAY));
+    $("div.today h3").text(getMonthname(TODAY)+' '+TODAY.getDate()+", "+TODAY.getRealYear());
+    $("input.item_date").val(TODAY.toString());
 
-  // skip URL bar in mobile browser
-  /mobile/i.test(navigator.userAgent) && !location.hash && setTimeout(function () {
-    window.scrollTo(0, 1);
-  }, 1000);
-});
+    // skip URL bar in mobile browser
+    /mobile/i.test(navigator.userAgent) && !location.hash && setTimeout(function () {
+      window.scrollTo(0, 1);
+    }, 1000);
+
+    // load default data
+    ToDo.user(function(data) {
+      $("div.head span.user").text(data.login);
+      fetchTodos();
+    }, function(req, stat) {
+      // need error handling
+      console.log(req, stat);
+    });
+})();
