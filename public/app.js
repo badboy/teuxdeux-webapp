@@ -5,16 +5,14 @@
   // return YYYY-MM-DD string
   function dateString(t) {
     t = t || new Date;
-    return (t.getYear() + 1900)+"-"+pad(t.getMonth()+1,2,0)+"-"+pad(t.getDate(),2,0);
+    return (t.getFullYear())+"-"+pad(t.getMonth()+1,2,0)+"-"+pad(t.getDate(),2,0);
   }
 
-  // return new date object with two additional methods
+  // return new date object with an additional method
   // * toString returns YYYY-MM-DD formatted string
-  // * getRealYear returns the real year (getYear()+1900)
   function dateNow() {
     var t = new Date;
     t.toString = function() { return dateString(t); }
-    t.getRealYear = function() { return t.getYear() + 1900; }
     return t;
   }
 
@@ -216,7 +214,7 @@
 
     // replace "current time" header with real data
     $("div.today h1 span").text(getDayname(TODAY));
-    $("div.today h3").text(getMonthname(TODAY)+' '+TODAY.getDate()+", "+TODAY.getRealYear());
+    $("div.today h3").text(getMonthname(TODAY)+' '+TODAY.getDate()+", "+TODAY.getFullYear());
     $("input.item_date").val(TODAY.toString());
 
     // skip URL bar in mobile browser
