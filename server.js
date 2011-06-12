@@ -7,6 +7,15 @@ var urlParse  = require('url').parse;
 
 var WEBROOT    = path.dirname(__filename) + '/public';
 
+var daemon = require('daemon');
+
+var CONFIG = {
+  lockFile:  path.join(__dirname, 'tmp', 'teuxdeux-mobile.pid'),
+  logFile:   path.join(__dirname, 'tmp', 'teuxdeux-mobile.log'),
+  port:      8124,
+  host:      '127.0.0.1'
+};
+
 /* paperboy log method */
 function log(statCode, url, ip, err) {
   var logStr = statCode + ' - ' + url + ' - ' + ip;
@@ -35,47 +44,77 @@ function isValidUrl(url) {
   return found;
 }
 
-var server = http.createServer(function (request, response) {
-  var url = urlParse(request.url, true);
-  var ip = request.connection.remoteAddress;
+function startServer() {
+  var server = http.createServer(function (request, response) {
+    var url = urlParse(request.url, true);
+    var ip = request.connection.remoteAddress;
 
 
-  if(url.pathname.match(/^\/teuxdeux/)) {
-    console.log("Proxying request to TeuxDeux API: "+url.pathname);
-    //console.log(request);
+    if(url.pathname.match(/^\/teuxdeux/)) {
+      console.log("Proxying request to TeuxDeux API: "+url.pathname);
+      //console.log(request);
 
-    var proxy = new httpProxy.HttpProxy();
-    request.url = request.url.replace(/^\/teuxdeux/, "/api");
-    var buffer = proxy.buffer(request);
+      var proxy = new httpProxy.HttpProxy();
+      request.url = request.url.replace(/^\/teuxdeux/, "/api");
+      var buffer = proxy.buffer(request);
 
-    if(isValidUrl(request.url))  {
-      proxy.proxyRequest(request, response, {
-        host: "teuxdeux.com",
-        port: 443,
-        https: true,
-        buffer: buffer
-      });
+      if(isValidUrl(request.url))  {
+        proxy.proxyRequest(request, response, {
+          host: "teuxdeux.com",
+          port: 443,
+          https: true,
+          buffer: buffer
+        });
+      } else {
+        response.writeHead(403, {'Content-Type': 'text/plain'});
+        response.end("Proxying denied.");
+        console.log("  Proxying denied.");
+      }
     } else {
-      response.writeHead(403, {'Content-Type': 'text/plain'});
-      response.end("Proxying denied.");
-      console.log("  Proxying denied.");
+      paperboy
+      .deliver(WEBROOT, request, response)
+      .after(function(statCode) {
+        log(statCode, request.url, ip);
+      })
+      .error(function(statCode, msg) {
+        response.writeHead(statCode, {'Content-Type': 'text/plain'});
+        response.end("Error " + statCode);
+        log(statCode, request.url, ip, msg);
+      })
+      .otherwise(function(err) {
+        response.writeHead(404, {'Content-Type': 'text/plain'});
+        response.end("Error 404: File not found");
+        log(404, request.url, ip, err);
+      });
     }
-  } else {
-    paperboy
-    .deliver(WEBROOT, request, response)
-    .after(function(statCode) {
-      log(statCode, request.url, ip);
-    })
-    .error(function(statCode, msg) {
-      response.writeHead(statCode, {'Content-Type': 'text/plain'});
-      response.end("Error " + statCode);
-      log(statCode, request.url, ip, msg);
-    })
-    .otherwise(function(err) {
-      response.writeHead(404, {'Content-Type': 'text/plain'});
-      response.end("Error 404: File not found");
-      log(404, request.url, ip, err);
+  }).listen(CONFIG.port, CONFIG.host);
+}
+
+var args = process.argv;
+
+// Handle start stop commands
+switch(args[2]) {
+  case "stop":
+    daemon.kill(CONFIG.lockFile, function (err, pid) {
+      if (err) return sys.puts('Error stopping daemon: ' + err);
+      sys.puts('Successfully stopped daemon with pid: ' + pid);
     });
-  }
-}).listen(2000);
-console.log("= Server listening on http://localhost:2000");
+    break;
+
+  case "start":
+    startServer();
+
+    daemon.daemonize(CONFIG.logFile, CONFIG.lockFile, function (err, started) {
+      if (err) {
+        console.dir(err.stack);
+        return sys.puts('Error starting daemon: ' + err);
+      }
+      sys.puts('Server running at http://'+CONFIG.host+':'+CONFIG.port+'/');
+    });
+    sys.puts('Successfully started daemon');
+    break;
+
+  default:
+    sys.puts('Usage: [start|stop]');
+    break;
+}
