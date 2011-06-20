@@ -16,6 +16,7 @@
       }
       .head h1{font-size:1em;display:inline;}
       .head span.user{float:right;font-weight:bold;}
+      .head span.user a{color:white;text-decoration:none;}
       .head span.user i{font-weight: normal;}
       .date {
         text-align: center;
@@ -42,6 +43,12 @@
       }
       .list li .delete a{color:#c00;text-decoration:none;}
       .list li.crossedout .delete{display:inline;}
+      .list li.newdate{
+        background-color:#C00;
+        color:white;
+        text-align:center;
+        border:none;
+      }
       .list li.loading{color:#c00;text-align:center}
       form{padding-bottom:10px;text-align:center;}
       form input{font-size:1.8em;width:99%;}
@@ -53,7 +60,9 @@
     <div class="content">
       <div class="head">
         <h1>txdx</h1>
-        <span class="user"><i>none</i></span>
+        <span class="user">
+          <a href="#more"><i>none</i></a>
+        </span>
       </div>
       <div class="date today">
         <h1><span>someday</span></h1>

@@ -141,8 +141,13 @@
       },
 
       // get list of all todos
-      list: function listTodos(success, error) {
-        get("/teuxdeux/list.json", success, error);
+      list: function listTodos(since, success, error) {
+        if(typeof since === "string")
+          get("/teuxdeux/list.json?since="+encodeURIComponent(since), success, error);
+        else
+          // since is success and
+          // success is error
+          get("/teuxdeux/list.json", since, success);
       },
 
       // toggle done status of given todo
@@ -173,6 +178,8 @@
     if(val && val.length > 0) {
       ToDo.create(val, $(e.target).find("input.item_date").val(), function(data) {
         entry.val('');
+        $(".newdate").remove();
+        $(".newdate_todo").remove();
         appendTodo(data);
       });
     }
@@ -186,12 +193,67 @@
       if(e.target.nodeName == 'P')
         t = t.parent();
 
-      if(!t.hasClass('placeholder')) {
+      if(!t.hasClass('placeholder') && !t.hasClass('newdate') &&
+        !t.hasClass('newdate_todo')) {
         ToDo.toggle(t.attr('data-id'), t.hasClass('crossedout') ? false : true, function() {
           t.toggleClass('crossedout');
         });
       }
     }
+  });
+
+  $(".head span.user a").live('click', function(e) {
+    e.preventDefault();
+
+    if($('li.newdate').length > 0 ||
+       $('li.newdate_todo').length > 0) {
+      $('li.newdate').remove();
+      $('li.newdate_todo').remove();
+      return;
+    }
+
+    // the next day.
+    var newDate = new Date(TODAY);
+    newDate.setDate(newDate.getDate()+1);
+
+    var placeholders = $("li.placeholder");
+    Array.prototype.shift.call(placeholders);
+    placeholders.remove();
+
+    ToDo.list(TODAY.toString(), function(data) {
+      data = data.sort(function(a, b) {
+        return (((new Date(a.do_on)) > (new Date(b.do_on))) ? 1 : -1);
+      });
+
+      var limit = 20, c = 0;
+      var t;
+      var h = '<li><p></p> <span class="delete"><a href="">x</a></span></li>';
+      for(var i=0;t=data[i++];) {
+        //var t = data[id];
+        if($("li[data-date='"+t.do_on+"']").length == 0) {
+          obj = $(h)
+
+          var d = new Date(t.do_on);
+          obj.addClass('newdate').
+            attr('data-date', t.do_on).
+            find('p').text(getDayname(d) + ', ' + t.do_on);
+
+          $("div.list ul").append(obj);
+        }
+
+        var newtodo = $(h);
+        newtodo.find('p').text(t.todo);
+        newtodo.attr('data-id', t.id);
+        newtodo.addClass('newdate_todo');
+        if(t.done) {
+          newtodo.addClass('crossedout');
+        }
+        $("div.list ul").append(newtodo);
+
+        c++;
+        if(c > limit) break;
+      }
+    });
   });
 
   // delete items
