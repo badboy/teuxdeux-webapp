@@ -67,11 +67,6 @@
     ToDo.list(function(data) {
       $("li.loading").remove();
 
-  // skip URL bar in mobile browser
-  ///mobile/i.test(navigator.userAgent) && !location.hash && (function () {
-    //window.scrollTo(0, 1);
-  //})();
-
       for(id in data) {
         var t = data[id];
         if(t.do_on === TODAY.toString()) {
@@ -193,8 +188,7 @@
       if(e.target.nodeName == "P")
         t = t.parent();
 
-      if(!t.hasClass("placeholder") && !t.hasClass("newdate") &&
-        !t.hasClass("newdate_todo")) {
+      if(!t.hasClass("placeholder") && !t.hasClass("newdate") && !t.hasClass("newdate_todo")) {
         ToDo.toggle(t.attr("data-id"), t.hasClass("crossedout") ? false : true, function() {
           t.toggleClass("crossedout");
         });
@@ -205,8 +199,7 @@
   $(".head span.user a").live("click", function(e) {
     e.preventDefault();
 
-    if($("li.newdate").length > 0 ||
-       $("li.newdate_todo").length > 0) {
+    if($("li.newdate").length > 0 || $("li.newdate_todo").length > 0) {
       $("li.newdate").remove();
       $("li.newdate_todo").remove();
       return;
@@ -274,22 +267,22 @@
 
   var TODAY = dateNow();
 
-    // replace "current time" header with real data
-    $("div.today h1 span").text(getDayname(TODAY));
-    $("div.today h3").text(getMonthname(TODAY)+' '+TODAY.getDate()+", "+TODAY.getFullYear());
-    $("input.item_date").val(TODAY.toString());
+  // replace "current time" header with real data
+  $("div.today h1 span").text(getDayname(TODAY));
+  $("div.today h3").text(getMonthname(TODAY)+' '+TODAY.getDate()+", "+TODAY.getFullYear());
+  $("input.item_date").val(TODAY.toString());
 
-    // skip URL bar in mobile browser
-    /mobile/i.test(navigator.userAgent) && !location.hash && setTimeout(function () {
-      window.scrollTo(0, 1);
-    }, 1000);
+  // skip URL bar in mobile browser
+  /mobile/i.test(navigator.userAgent) && !location.hash && setTimeout(function () {
+    window.scrollTo(0, 1);
+  }, 1000);
 
-    // load default data
-    ToDo.user(function(data) {
-      $("div.head span.user").text(data.login);
-      fetchTodos();
-    }, function(req, stat) {
-      // need error handling
-      console.log(req, stat);
-    });
+  // load default data
+  ToDo.user(function(data) {
+    $("div.head span.user a").text(data.login);
+    fetchTodos();
+  }, function(req, stat) {
+    // need error handling
+    console.log(req, stat);
+  });
 })();
