@@ -52,11 +52,11 @@
   function appendTodo(data) {
     var obj = $("li.placeholder").first().removeClass("placeholder")
     if(obj.length === 0) {
-      obj = $('<li><p></p> <span class="delete"><a href="">x</a></span></li>')
+      obj = $('<li><p></p> <span class="delete"><a href="">x</a></span></li>');
       $("div.list ul").append(obj);
     }
     obj.find("p").text(data.todo);
-    obj.attr('data-id', data.id);
+    obj.attr("data-id", data.id);
     if(data.done) {
       obj.addClass("crossedout");
     }
@@ -164,20 +164,20 @@
    * we want some more functionality:
    *   real date switching thingy (and "someday" list)
    **/
-  $('.date').
+  $(".date").
     // next
     swipeLeft(function() { console.log("date switch not implemented"); }).
     // prev
     swipeRight(function() { console.log("date switch not implemented"); });
 
   // add new todo on submit
-  $("form.new_todo").bind('submit', function(e) {
+  $("form.new_todo").bind("submit", function(e) {
     e.preventDefault();
     var entry = $(e.target).find("input.entry");
     var val = entry.val();
     if(val && val.length > 0) {
       ToDo.create(val, $(e.target).find("input.item_date").val(), function(data) {
-        entry.val('');
+        entry.val("");
         $(".newdate").remove();
         $(".newdate_todo").remove();
         appendTodo(data);
@@ -186,29 +186,29 @@
   });
 
   // toggle status when clicked
-  $("li").live('click', function(e) {
-    if(e.target.nodeName != 'A') {
+  $("li").live("click", function(e) {
+    if(e.target.nodeName != "A") {
       e.preventDefault();
       var t = $(e.target);
-      if(e.target.nodeName == 'P')
+      if(e.target.nodeName == "P")
         t = t.parent();
 
-      if(!t.hasClass('placeholder') && !t.hasClass('newdate') &&
-        !t.hasClass('newdate_todo')) {
-        ToDo.toggle(t.attr('data-id'), t.hasClass('crossedout') ? false : true, function() {
-          t.toggleClass('crossedout');
+      if(!t.hasClass("placeholder") && !t.hasClass("newdate") &&
+        !t.hasClass("newdate_todo")) {
+        ToDo.toggle(t.attr("data-id"), t.hasClass("crossedout") ? false : true, function() {
+          t.toggleClass("crossedout");
         });
       }
     }
   });
 
-  $(".head span.user a").live('click', function(e) {
+  $(".head span.user a").live("click", function(e) {
     e.preventDefault();
 
-    if($('li.newdate').length > 0 ||
-       $('li.newdate_todo').length > 0) {
-      $('li.newdate').remove();
-      $('li.newdate_todo').remove();
+    if($("li.newdate").length > 0 ||
+       $("li.newdate_todo").length > 0) {
+      $("li.newdate").remove();
+      $("li.newdate_todo").remove();
       return;
     }
 
@@ -234,19 +234,19 @@
           obj = $(h)
 
           var d = new Date(t.do_on);
-          obj.addClass('newdate').
-            attr('data-date', t.do_on).
-            find('p').text(getDayname(d) + ', ' + t.do_on);
+          obj.addClass("newdate").
+            attr("data-date", t.do_on).
+            find("p").text(getDayname(d) + ", " + t.do_on);
 
           $("div.list ul").append(obj);
         }
 
         var newtodo = $(h);
-        newtodo.find('p').text(t.todo);
-        newtodo.attr('data-id', t.id);
-        newtodo.addClass('newdate_todo');
+        newtodo.find("p").text(t.todo);
+        newtodo.attr("data-id", t.id);
+        newtodo.addClass("newdate_todo");
         if(t.done) {
-          newtodo.addClass('crossedout');
+          newtodo.addClass("crossedout");
         }
         $("div.list ul").append(newtodo);
 
@@ -257,11 +257,11 @@
   });
 
   // delete items
-  $("li.crossedout span.delete a").live('click', function(e) {
+  $("li.crossedout span.delete a").live("click", function(e) {
     e.preventDefault();
     var t = $(e.target).parent().parent();
 
-    var id = t.attr('data-id');
+    var id = t.attr("data-id");
     ToDo.remove(id, function() {
       t.remove();
 
