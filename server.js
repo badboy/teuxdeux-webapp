@@ -12,8 +12,8 @@ var daemon = require('daemon');
 var CONFIG = {
   lockFile:  path.join(__dirname, 'tmp', 'teuxdeux-mobile.pid'),
   logFile:   path.join(__dirname, 'tmp', 'teuxdeux-mobile.log'),
-  port:      8124,
-  host:      '127.0.0.1'
+  port:      process.env.PORT || 8124,
+  host:      process.env.HOST || '127.0.0.1'
 };
 
 /* paperboy log method */
