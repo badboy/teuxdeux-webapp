@@ -54,12 +54,26 @@
       form input{font-size:1.8em;width:99%;}
       .prev{margin-left:10px;float:left;font-size:2em;}
       .next{margin-right:10px;float:right;font-size:2em;}
+      .head .loading img.spinning{
+        width:14px;height:14px;
+        -webkit-animation-name:rotate;
+        -webkit-animation-duration:1.0s;
+        -webkit-animation-iteration-count:infinite;
+        -webkit-animation-timing-function:linear;
+      }
+      @-webkit-keyframes rotate{
+        from{-webkit-transform:rotate(0deg);}
+        to{-webkit-transform:rotate(360deg);}
+      }
     </style>
   </head>
   <body>
     <div class="content">
       <div class="head">
         <h1>txdx</h1>
+        <span class="loading">
+          <img src="/loading.png" width="14" height="14" alt="...">
+        </span>
         <span class="user">
           <a href="#more"><i>none</i></a>
         </span>

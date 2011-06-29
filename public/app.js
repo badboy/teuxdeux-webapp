@@ -77,11 +77,23 @@
   }
 
   var ToDo = (function() {
+    function spinner(spin) {
+      if(spin) $('.head .loading img').addClass('spinning');
+      else $('.head .loading img').removeClass('spinning');
+    }
+
     function get(url, success, error) {
+      spinner(true);
       $.ajax({
         url: url,
-        success: success,
-        error: error,
+        success: function(data) {
+          spinner();
+          success(data);
+        },
+        error: function(xhr, type) {
+          spinner();
+          error(xhr, type)
+        },
         dataType: "json"
       });
     }
@@ -91,13 +103,20 @@
       var dataType = data.dataType || "json";
       delete data["dataType"];
 
+      spinner(true);
       $.ajax({
         url: url,
         type: "POST",
         data: data,
         dataType: dataType,
-        success: success,
-        error: error,
+        success: function(data) {
+          spinner();
+          success(data)
+        },
+        error: function(xhr, type) {
+          spinner();
+          error(xhr, type)
+        },
       });
     }
 
@@ -170,12 +189,14 @@
     e.preventDefault();
     var entry = $(e.target).find("input.entry");
     var val = entry.val();
+    entry.val("");
     if(val && val.length > 0) {
       ToDo.create(val, $(e.target).find("input.item_date").val(), function(data) {
-        entry.val("");
         $(".newdate").remove();
         $(".newdate_todo").remove();
         appendTodo(data);
+      }, function(err) {
+        entry.val(val);
       });
     }
   });
@@ -210,7 +231,7 @@
     newDate.setDate(newDate.getDate()+1);
 
     var placeholders = $("li.placeholder");
-    Array.prototype.shift.call(placeholders);
+    [].shift.call(placeholders);
     placeholders.remove();
 
     ToDo.list(TODAY.toString(), function(data) {
