@@ -44,8 +44,8 @@
       "August",
       "September",
       "October",
-      "November"
-      "December",
+      "November",
+      "December"
     ][date.getMonth()];
   }
 
