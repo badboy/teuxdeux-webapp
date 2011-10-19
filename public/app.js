@@ -34,7 +34,6 @@
   function getMonthname(date) {
     date = date || new Date;
     return [
-      "December",
       "January",
       "February",
       "March",
@@ -46,6 +45,7 @@
       "September",
       "October",
       "November"
+      "December",
     ][date.getMonth()];
   }
 
