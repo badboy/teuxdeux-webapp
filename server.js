@@ -1,11 +1,11 @@
-var sys       = require('sys');
+var util      = require('util');
 var path      = require('path');
 var http      = require('http');
 var httpProxy = require('http-proxy');
 var paperboy  = require('paperboy');
 var urlParse  = require('url').parse;
 
-var WEBROOT    = path.dirname(__filename) + '/public';
+var WEBROOT   = path.dirname(__filename) + '/public';
 
 var daemon = require('daemon');
 
@@ -49,21 +49,17 @@ function startServer() {
     var url = urlParse(request.url, true);
     var ip = request.connection.remoteAddress;
 
-
     if(url.pathname.match(/^\/teuxdeux/)) {
       console.log("Proxying request to TeuxDeux API: "+url.pathname);
-      //console.log(request);
 
-      var proxy = new httpProxy.HttpProxy();
+      var proxy = new httpProxy.RoutingProxy();
       request.url = request.url.replace(/^\/teuxdeux/, "/api");
-      var buffer = proxy.buffer(request);
 
       if(isValidUrl(request.url))  {
         proxy.proxyRequest(request, response, {
           host: "teuxdeux.com",
           port: 443,
           https: true,
-          buffer: buffer
         });
       } else {
         response.writeHead(403, {'Content-Type': 'text/plain'});
@@ -96,8 +92,8 @@ var args = process.argv;
 switch(args[2]) {
   case "stop":
     daemon.kill(CONFIG.lockFile, function (err, pid) {
-      if (err) return sys.puts('Error stopping daemon: ' + err);
-      sys.puts('Successfully stopped daemon with pid: ' + pid);
+      if (err) return util.log('Error stopping daemon: ' + err);
+      util.log('Successfully stopped daemon with pid: ' + pid);
     });
     break;
 
@@ -107,14 +103,14 @@ switch(args[2]) {
     daemon.daemonize(CONFIG.logFile, CONFIG.lockFile, function (err, started) {
       if (err) {
         console.dir(err.stack);
-        return sys.puts('Error starting daemon: ' + err);
+        return util.log('Error starting daemon: ' + err);
       }
-      sys.puts('Server running at http://'+CONFIG.host+':'+CONFIG.port+'/');
+      util.log('Server running at http://'+CONFIG.host+':'+CONFIG.port+'/');
     });
-    sys.puts('Successfully started daemon');
+    util.log('Successfully started daemon');
     break;
 
   default:
-    sys.puts('Usage: [start|stop]');
+    util.log('Usage: [start|stop]');
     break;
 }
