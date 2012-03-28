@@ -1,4 +1,4 @@
-# TeuxDeux Webapp 
+# TeuxDeux Webapp
 
 A small single-page web app, so you can easily view/edit/update your [TeuxDeux][] list on small screens like on smartphones.
 
@@ -12,18 +12,18 @@ So now that I've got the [API documentation][apiwiki] I created this thing.
 
 ## How?
 
-It's just a simple node.js webserver proxying all API requests and serving the index.html and app.js.
+It's just a simple node.js webserver proxying all API requests and serving the index.html and app.js (daemonized by default).
 
 
 ## And now?
 
-    npm install http-proxy paperboy
+    npm install
 
-and 
+and
 
-    node server.js
+    node server.js start
 
-It's that simple.
+It's that simple (Or use `node server.js nodaemon` to start in foreground).
 
 
 

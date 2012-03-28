@@ -1,0 +1,19 @@
+{
+  "name":        "teuxdeux-webapp",
+  "version":     "0.1.0",
+  "author":      "badboy",
+  "keywords":    "todo webapp teuxdeux ajax",
+  "description": "simple webapp for TeuxDeux using node.js proxy and some fancy AJAX",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://badboy@github.com/badboy/teuxdeux-webapp.git"
+  },
+
+  "dependencies": {
+    "daemon": "0.4.1",
+    "http-proxy": "0.8.0",
+    "paperboy": "0.0.3"
+  },
+
+  "main": "./server.js"
+}
