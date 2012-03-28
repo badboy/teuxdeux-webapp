@@ -109,6 +109,10 @@ switch(args[2]) {
     });
     util.log('Successfully started daemon');
     break;
+  case "nodaemon":
+    startServer();
+    util.log('Server running at http://'+CONFIG.host+':'+CONFIG.port+'/');
+    break;
 
   default:
     util.log('Usage: [start|stop]');
